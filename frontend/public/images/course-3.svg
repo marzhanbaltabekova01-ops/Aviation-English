@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="cockpit-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#050e1a"/>
+      <stop offset="60%" style="stop-color:#0a1a2e"/>
+      <stop offset="100%" style="stop-color:#0d2240"/>
+    </linearGradient>
+    <linearGradient id="panel-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#111827"/>
+      <stop offset="100%" style="stop-color:#0d1424"/>
+    </linearGradient>
+    <linearGradient id="sky-view" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#001440"/>
+      <stop offset="40%" style="stop-color:#002a6e"/>
+      <stop offset="60%" style="stop-color:#1565c0"/>
+      <stop offset="65%" style="stop-color:#e3a020"/>
+      <stop offset="80%" style="stop-color:#b34000"/>
+      <stop offset="100%" style="stop-color:#4a1500"/>
+    </linearGradient>
+    <radialGradient id="gauge-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00bcd4;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#00bcd4;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="instrument-glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="screen-glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#cockpit-bg)"/>
+
+  <!-- Windshield view (sunset over clouds) -->
+  <path d="M 150,0 L 650,0 L 720,180 L 80,180 Z" fill="url(#sky-view)"/>
+
+  <!-- Stars in sky -->
+  <g opacity="0.5">
+    <circle cx="200" cy="30" r="1" fill="white"/><circle cx="300" cy="50" r="1.5" fill="white"/>
+    <circle cx="400" cy="25" r="1" fill="white"/><circle cx="500" cy="45" r="1" fill="white"/>
+    <circle cx="600" cy="35" r="1.5" fill="white"/>
+  </g>
+
+  <!-- Cloud layer at horizon -->
+  <g fill="white" opacity="0.08">
+    <ellipse cx="200" cy="168" rx="150" ry="20"/>
+    <ellipse cx="500" cy="172" rx="180" ry="18"/>
+    <ellipse cx="700" cy="165" rx="120" ry="15"/>
+  </g>
+
+  <!-- Glareshield -->
+  <path d="M 0,170 L 800,170 L 800,210 Q 700,195 400,195 Q 100,195 0,210 Z" fill="#0d1424"/>
+
+  <!-- Instrument panel background -->
+  <rect x="0" y="195" width="800" height="260" fill="url(#panel-grad)"/>
+
+  <!-- Panel top edge highlight -->
+  <rect x="0" y="193" width="800" height="3" fill="#1e3a5f" opacity="0.8"/>
+
+  <!-- CENTER DISPLAY (PFD) -->
+  <g transform="translate(270, 215)">
+    <rect width="260" height="180" rx="6" fill="#050f1c" stroke="#1a3a5c" stroke-width="2"/>
+    <!-- Artificial horizon -->
+    <rect x="4" y="4" width="252" height="172" rx="4" fill="#0a1f38"/>
+    <!-- Sky half -->
+    <rect x="4" y="4" width="252" height="86" rx="4" fill="#003c8a" opacity="0.9"/>
+    <!-- Ground half -->
+    <rect x="4" y="90" width="252" height="86" fill="#3e2000" opacity="0.9"/>
+    <!-- Horizon line -->
+    <line x1="4" y1="88" x2="256" y2="92" stroke="white" stroke-width="2"/>
+    <!-- Pitch ladder -->
+    <g stroke="white" stroke-width="1" opacity="0.6">
+      <line x1="90" y1="70" x2="170" y2="70"/><text x="175" y="74" font-size="8" fill="white">5</text>
+      <line x1="90" y1="110" x2="170" y2="110"/><text x="175" y="114" font-size="8" fill="white">-5</text>
+      <line x1="100" y1="55" x2="160" y2="55"/><text x="165" y="59" font-size="8" fill="white">10</text>
+      <line x1="100" y1="125" x2="160" y2="125"/><text x="165" y="129" font-size="8" fill="white">-10</text>
+    </g>
+    <!-- Aircraft symbol -->
+    <g stroke="#00e5ff" stroke-width="2.5" fill="none">
+      <line x1="100" y1="88" x2="125" y2="88"/>
+      <line x1="135" y1="88" x2="125" y2="88"/>
+      <line x1="175" y1="88" x2="135" y2="88"/>
+      <rect x="128" y="84" width="4" height="8" fill="#00e5ff" stroke="none"/>
+    </g>
+    <!-- Speed tape -->
+    <rect x="4" y="4" width="25" height="172" rx="4" fill="#001233" opacity="0.9"/>
+    <text x="8" y="86" font-size="9" fill="#00e5ff" font-weight="bold">240</text>
+    <text x="8" y="96" font-size="7" fill="#81d4fa">238</text>
+    <text x="8" y="76" font-size="7" fill="#81d4fa">242</text>
+    <!-- Altitude tape -->
+    <rect x="231" y="4" width="25" height="172" rx="4" fill="#001233" opacity="0.9"/>
+    <text x="233" y="86" font-size="8" fill="#00e5ff" font-weight="bold">FL350</text>
+    <text x="234" y="96" font-size="6" fill="#81d4fa">340</text>
+    <!-- Compass -->
+    <rect x="60" y="156" width="140" height="18" rx="3" fill="#001233"/>
+    <text x="125" y="168" font-size="10" fill="white" text-anchor="middle" font-weight="bold">270</text>
+    <text x="95" y="168" font-size="8" fill="#81d4fa">W</text>
+    <text x="155" y="168" font-size="8" fill="#81d4fa">260</text>
+  </g>
+
+  <!-- LEFT DISPLAY (ND) -->
+  <g transform="translate(20, 215)">
+    <rect width="235" height="180" rx="6" fill="#050f1c" stroke="#1a3a5c" stroke-width="2"/>
+    <rect x="4" y="4" width="227" height="172" rx="4" fill="#001233" opacity="0.9"/>
+    <!-- Nav display circles -->
+    <circle cx="113" cy="110" r="70" fill="none" stroke="#1a3a5c" stroke-width="1" opacity="0.5"/>
+    <circle cx="113" cy="110" r="50" fill="none" stroke="#1a3a5c" stroke-width="1" opacity="0.3"/>
+    <!-- Compass rose -->
+    <g stroke="#4fc3f7" stroke-width="0.8" opacity="0.4">
+      <line x1="113" y1="45" x2="113" y2="30"/>
+      <line x1="113" y1="175" x2="113" y2="190"/>
+      <line x1="48" y1="110" x2="33" y2="110"/>
+      <line x1="178" y1="110" x2="193" y2="110"/>
+    </g>
+    <text x="113" y="28" font-size="9" fill="#4fc3f7" text-anchor="middle">N</text>
+    <text x="113" y="195" font-size="9" fill="#4fc3f7" text-anchor="middle">S</text>
+    <text x="30" y="114" font-size="9" fill="#4fc3f7" text-anchor="middle">W</text>
+    <text x="196" y="114" font-size="9" fill="#4fc3f7" text-anchor="middle">E</text>
+    <!-- Aircraft symbol on ND -->
+    <g stroke="#00e5ff" stroke-width="2" fill="none">
+      <line x1="113" y1="100" x2="113" y2="125"/>
+      <line x1="100" y1="115" x2="126" y2="115"/>
+      <line x1="106" y1="122" x2="120" y2="122"/>
+    </g>
+    <!-- Waypoints -->
+    <g fill="#00e5ff" opacity="0.8">
+      <polygon points="113,55 116,62 110,62" />
+      <text x="119" y="61" font-size="7" fill="#4dd0e1">KATEX</text>
+    </g>
+    <!-- Route line -->
+    <line x1="113" y1="110" x2="113" y2="62" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>
+    <!-- Label -->
+    <text x="12" y="18" font-size="9" fill="#4fc3f7" font-weight="bold">NAV DISPLAY</text>
+    <text x="12" y="168" font-size="9" fill="#81d4fa">GS 480 TAS 490</text>
+  </g>
+
+  <!-- RIGHT DISPLAY (EICAS) -->
+  <g transform="translate(545, 215)">
+    <rect width="235" height="180" rx="6" fill="#050f1c" stroke="#1a3a5c" stroke-width="2"/>
+    <rect x="4" y="4" width="227" height="172" rx="4" fill="#001233" opacity="0.9"/>
+    <text x="12" y="18" font-size="9" fill="#4fc3f7" font-weight="bold">EICAS</text>
+    <!-- Engine gauges -->
+    <g transform="translate(20, 25)">
+      <!-- ENG 1 -->
+      <circle cx="45" cy="45" r="35" fill="none" stroke="#1a3a5c" stroke-width="2"/>
+      <circle cx="45" cy="45" r="35" fill="none" stroke="#00e5ff" stroke-width="3"
+              stroke-dasharray="165 44" stroke-dashoffset="11" opacity="0.8"/>
+      <text x="45" y="42" font-size="10" fill="#00e5ff" text-anchor="middle" font-weight="bold">91%</text>
+      <text x="45" y="52" font-size="7" fill="#81d4fa" text-anchor="middle">N1</text>
+      <text x="45" y="90" font-size="8" fill="#90a4ae" text-anchor="middle">ENG 1</text>
+      <!-- ENG 2 -->
+      <circle cx="145" cy="45" r="35" fill="none" stroke="#1a3a5c" stroke-width="2"/>
+      <circle cx="145" cy="45" r="35" fill="none" stroke="#00e5ff" stroke-width="3"
+              stroke-dasharray="163 46" stroke-dashoffset="11" opacity="0.8"/>
+      <text x="145" y="42" font-size="10" fill="#00e5ff" text-anchor="middle" font-weight="bold">90%</text>
+      <text x="145" y="52" font-size="7" fill="#81d4fa" text-anchor="middle">N1</text>
+      <text x="145" y="90" font-size="8" fill="#90a4ae" text-anchor="middle">ENG 2</text>
+    </g>
+    <!-- Fuel / other params -->
+    <g transform="translate(12, 130)">
+      <text x="0" y="12" font-size="8" fill="#90a4ae">FUEL</text>
+      <rect x="35" y="4" width="80" height="8" rx="2" fill="#1a3a5c"/>
+      <rect x="35" y="4" width="60" height="8" rx="2" fill="#00e5ff" opacity="0.7"/>
+      <text x="120" y="12" font-size="8" fill="#4dd0e1">18.4t</text>
+      <text x="0" y="30" font-size="8" fill="#90a4ae">OIL T</text>
+      <text x="50" y="30" font-size="8" fill="#69f0ae">82°C</text>
+      <text x="0" y="48" font-size="8" fill="#90a4ae">HYD</text>
+      <text x="50" y="48" font-size="8" fill="#69f0ae">3000 PSI</text>
+    </g>
+  </g>
+
+  <!-- FCU Panel (top center) -->
+  <g transform="translate(270, 195)">
+    <rect width="260" height="22" rx="3" fill="#0a1628" stroke="#1e3a5c" stroke-width="1"/>
+    <text x="30" y="15" font-size="8" fill="#4dd0e1">ALT</text>
+    <text x="55" y="15" font-size="9" fill="white" font-weight="bold">35000</text>
+    <text x="120" y="15" font-size="8" fill="#4dd0e1">SPD</text>
+    <text x="143" y="15" font-size="9" fill="white" font-weight="bold">M .85</text>
+    <text x="195" y="15" font-size="8" fill="#4dd0e1">HDG</text>
+    <text x="218" y="15" font-size="9" fill="white" font-weight="bold">270°</text>
+  </g>
+
+  <!-- Radio/Comm panel bottom -->
+  <g transform="translate(0, 395)">
+    <rect width="800" height="55" fill="#060e1a"/>
+    <rect width="800" height="2" fill="#1e3a5c" opacity="0.5"/>
+    <!-- COM 1 -->
+    <text x="30" y="20" font-size="9" fill="#4dd0e1">COM 1</text>
+    <text x="30" y="36" font-size="13" fill="white" font-weight="bold">118.700</text>
+    <!-- NAV 1 -->
+    <text x="180" y="20" font-size="9" fill="#4dd0e1">NAV 1</text>
+    <text x="180" y="36" font-size="13" fill="white" font-weight="bold">113.40</text>
+    <!-- ATIS label -->
+    <text x="340" y="20" font-size="9" fill="#4dd0e1">SQUAWK</text>
+    <text x="340" y="36" font-size="13" fill="white" font-weight="bold">2341</text>
+    <!-- Course label -->
+    <text x="600" y="20" font-size="9" fill="#4dd0e1">ICAO Level 4 · Пилоты</text>
+    <text x="600" y="38" font-size="11" fill="#90caf9">Полный курс подготовки</text>
+  </g>
+</svg>

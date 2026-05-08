@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#020810"/>
+      <stop offset="100%" style="stop-color:#071220"/>
+    </linearGradient>
+    <radialGradient id="radar-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.12"/>
+      <stop offset="70%" style="stop-color:#00cc66;stop-opacity:0.04"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="sweep-grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="green-glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="strong-glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="radar-clip">
+      <circle cx="400" cy="225" r="195"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#bg4)"/>
+
+  <!-- Screen bezel -->
+  <rect x="10" y="10" width="780" height="430" rx="12" fill="#0a1220" stroke="#1a2f4a" stroke-width="2"/>
+
+  <!-- Radar screen background -->
+  <circle cx="400" cy="225" r="200" fill="#020d08"/>
+  <circle cx="400" cy="225" r="200" fill="url(#radar-glow)"/>
+
+  <!-- Radar grid circles -->
+  <g stroke="#00ff88" fill="none" opacity="0.15">
+    <circle cx="400" cy="225" r="50"/>
+    <circle cx="400" cy="225" r="100"/>
+    <circle cx="400" cy="225" r="150"/>
+    <circle cx="400" cy="225" r="200"/>
+  </g>
+
+  <!-- Radar crosshairs -->
+  <g stroke="#00ff88" stroke-width="0.5" opacity="0.2">
+    <line x1="200" y1="225" x2="600" y2="225"/>
+    <line x1="400" y1="25" x2="400" y2="425"/>
+    <line x1="259" y1="84" x2="541" y2="366"/>
+    <line x1="541" y1="84" x2="259" y2="366"/>
+  </g>
+
+  <!-- Radar range labels -->
+  <g fill="#00ff88" opacity="0.4" font-size="9" font-family="monospace">
+    <text x="402" y="180" >50</text>
+    <text x="402" y="130" >100</text>
+    <text x="402" y="80" >150</text>
+    <text x="402" y="30" >200NM</text>
+  </g>
+
+  <!-- Radar sweep (frozen at angle) -->
+  <g clip-path="url(#radar-clip)">
+    <path d="M 400 225 L 580 90 A 200 200 0 0 0 540 50 Z" fill="url(#sweep-grad)" opacity="0.5"/>
+    <line x1="400" y1="225" x2="580" y2="90" stroke="#00ff88" stroke-width="2" opacity="0.8"/>
+  </g>
+
+  <!-- Aircraft blips with labels -->
+  <g filter="url(#green-glow)">
+    <!-- Aircraft 1 -->
+    <g transform="translate(320, 145)">
+      <polygon points="0,-6 4,4 0,2 -4,4" fill="#00ff88" opacity="0.95"/>
+      <rect x="8" y="-8" width="72" height="28" rx="2" fill="#020d08" stroke="#00ff88" stroke-width="0.5" opacity="0.8"/>
+      <text x="11" y="2" font-size="8" fill="#00ff88" font-family="monospace">KZ557</text>
+      <text x="11" y="12" font-size="7" fill="#00cc66" font-family="monospace">FL350 M.85</text>
+    </g>
+    <!-- Aircraft 2 -->
+    <g transform="translate(470, 175)">
+      <polygon points="0,-6 4,4 0,2 -4,4" fill="#00ff88" opacity="0.95"/>
+      <rect x="8" y="-8" width="72" height="28" rx="2" fill="#020d08" stroke="#00ff88" stroke-width="0.5" opacity="0.8"/>
+      <text x="11" y="2" font-size="8" fill="#00ff88" font-family="monospace">TK890</text>
+      <text x="11" y="12" font-size="7" fill="#00cc66" font-family="monospace">FL340 M.82</text>
+    </g>
+    <!-- Aircraft 3 -->
+    <g transform="translate(360, 290)">
+      <polygon points="0,-6 4,4 0,2 -4,4" fill="#ffff00" opacity="0.9"/>
+      <rect x="8" y="-8" width="72" height="28" rx="2" fill="#020d08" stroke="#ffff00" stroke-width="0.5" opacity="0.8"/>
+      <text x="11" y="2" font-size="8" fill="#ffff00" font-family="monospace">KC301</text>
+      <text x="11" y="12" font-size="7" fill="#cccc00" font-family="monospace">FL280 M.80</text>
+    </g>
+    <!-- Aircraft 4 -->
+    <g transform="translate(490, 280)">
+      <polygon points="0,-6 4,4 0,2 -4,4" fill="#00ff88" opacity="0.95"/>
+      <rect x="8" y="-8" width="72" height="28" rx="2" fill="#020d08" stroke="#00ff88" stroke-width="0.5" opacity="0.8"/>
+      <text x="11" y="2" font-size="8" fill="#00ff88" font-family="monospace">SU201</text>
+      <text x="11" y="12" font-size="7" fill="#00cc66" font-family="monospace">FL360 M.84</text>
+    </g>
+    <!-- Aircraft 5 - conflict warning -->
+    <g transform="translate(430, 220)">
+      <polygon points="0,-7 5,5 0,3 -5,5" fill="#ff4444" opacity="0.95" filter="url(#strong-glow)"/>
+      <circle cx="0" cy="-1" r="12" fill="none" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>
+      <rect x="8" y="-12" width="72" height="28" rx="2" fill="#020d08" stroke="#ff4444" stroke-width="0.8" opacity="0.9"/>
+      <text x="11" y="-2" font-size="8" fill="#ff4444" font-family="monospace">UAE415</text>
+      <text x="11" y="8" font-size="7" fill="#ff8888" font-family="monospace">FL350 TCAS</text>
+    </g>
+  </g>
+
+  <!-- Velocity vectors -->
+  <g stroke="#00ff88" stroke-width="1" opacity="0.5">
+    <line x1="320" y1="139" x2="305" y2="120"/>
+    <line x1="470" y1="169" x2="488" y2="152"/>
+    <line x1="360" y1="284" x2="370" y2="268"/>
+    <line x1="490" y1="274" x2="505" y2="255"/>
+  </g>
+
+  <!-- Airways -->
+  <g stroke="#00ff88" stroke-width="0.5" stroke-dasharray="6,4" opacity="0.12">
+    <line x1="250" y1="100" x2="550" y2="350"/>
+    <line x1="200" y1="300" x2="600" y2="150"/>
+    <line x1="400" y1="30" x2="400" y2="420"/>
+  </g>
+
+  <!-- Left panel - status -->
+  <g transform="translate(15, 15)">
+    <rect width="170" height="410" rx="6" fill="#030c0a" stroke="#0d2a18" stroke-width="1"/>
+    <text x="12" y="25" font-size="10" fill="#00ff88" font-family="monospace" font-weight="bold">ASTANA TMA</text>
+    <line x1="5" y1="32" x2="165" y2="32" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+    <text x="8" y="50" font-size="8" fill="#00cc66" font-family="monospace">SECTOR: 04</text>
+    <text x="8" y="64" font-size="8" fill="#00cc66" font-family="monospace">TIME: 14:32Z</text>
+    <text x="8" y="78" font-size="8" fill="#00cc66" font-family="monospace">A/C: 12</text>
+    <line x1="5" y1="88" x2="165" y2="88" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+    <text x="8" y="105" font-size="8" fill="#00ff88" font-family="monospace">⚠ CONFLICT</text>
+    <text x="8" y="118" font-size="7" fill="#ff6666" font-family="monospace">UAE415/KZ557</text>
+    <text x="8" y="130" font-size="7" fill="#ff8888" font-family="monospace">SEP: 2.1NM</text>
+    <text x="8" y="142" font-size="7" fill="#ff8888" font-family="monospace">FL350 ±0</text>
+    <line x1="5" y1="152" x2="165" y2="152" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+    <text x="8" y="170" font-size="8" fill="#00cc66" font-family="monospace">WEATHER:</text>
+    <text x="8" y="182" font-size="7" fill="#4dd0e1" font-family="monospace">QNH 1013</text>
+    <text x="8" y="194" font-size="7" fill="#4dd0e1" font-family="monospace">WND 270/12</text>
+    <text x="8" y="206" font-size="7" fill="#4dd0e1" font-family="monospace">VIS 10KM</text>
+  </g>
+
+  <!-- Right panel - frequencies -->
+  <g transform="translate(615, 15)">
+    <rect width="170" height="410" rx="6" fill="#030c0a" stroke="#0d2a18" stroke-width="1"/>
+    <text x="12" y="25" font-size="10" fill="#00ff88" font-family="monospace" font-weight="bold">FREQUENCIES</text>
+    <line x1="5" y1="32" x2="165" y2="32" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+    <text x="8" y="50" font-size="8" fill="#00cc66" font-family="monospace">CONTROL:</text>
+    <text x="8" y="62" font-size="9" fill="white" font-family="monospace" font-weight="bold">125.700</text>
+    <text x="8" y="80" font-size="8" fill="#00cc66" font-family="monospace">APPROACH:</text>
+    <text x="8" y="92" font-size="9" fill="white" font-family="monospace">119.300</text>
+    <text x="8" y="110" font-size="8" fill="#00cc66" font-family="monospace">TOWER:</text>
+    <text x="8" y="122" font-size="9" fill="white" font-family="monospace">118.100</text>
+    <text x="8" y="140" font-size="8" fill="#00cc66" font-family="monospace">ATIS:</text>
+    <text x="8" y="152" font-size="9" fill="white" font-family="monospace">126.600</text>
+    <line x1="5" y1="165" x2="165" y2="165" stroke="#00ff88" stroke-width="0.5" opacity="0.3"/>
+    <text x="12" y="185" font-size="9" fill="#00ff88" font-family="monospace" font-weight="bold">COURSE</text>
+    <text x="8" y="202" font-size="7" fill="#4dd0e1" font-family="monospace">ICAO Level 4</text>
+    <text x="8" y="214" font-size="7" fill="#4dd0e1" font-family="monospace">для диспетчеров</text>
+    <text x="8" y="230" font-size="7" fill="#81d4fa" font-family="monospace">ATC phraseology</text>
+    <text x="8" y="242" font-size="7" fill="#81d4fa" font-family="monospace">Emergency proc.</text>
+  </g>
+
+  <!-- Bottom status bar -->
+  <rect x="10" y="430" width="780" height="18" rx="4" fill="#030c0a"/>
+  <text x="20" y="443" font-size="8" fill="#00ff88" font-family="monospace">ASTANA ACC · SECTOR 04 · 14:32:45 UTC · RADAR RANGE: 200NM · ICAO Level 4 — Авиадиспетчеры</text>
+</svg>

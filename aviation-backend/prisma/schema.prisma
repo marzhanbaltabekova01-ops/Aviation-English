@@ -1,0 +1,146 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Specialization {
+  PILOT_COMMERCIAL
+  PILOT_PRIVATE
+  ATC_CONTROLLER
+  CABIN_CREW
+  STUDENT
+  ENGINEER
+}
+
+enum CourseLevel {
+  Pre_Aviation   @map("Pre-Aviation")
+  ICAO_Level_3   @map("ICAO Level 3")
+  ICAO_Level_4   @map("ICAO Level 4")
+  ICAO_Level_5_6 @map("ICAO Level 5-6")
+  Corporate
+}
+
+enum LessonType {
+  LISTENING
+  QUIZ
+  VOCABULARY
+  READING
+}
+
+model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  role           Role           @default(USER)
+  blocked        Boolean        @default(false)   
+  specialization Specialization @default(STUDENT)
+  avatarUrl      String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  enrollments    Enrollment[]
+  lessonProgress LessonProgress[]
+  totalXp        Int     @default(0)
+  xpLogs         XpLog[]
+
+  @@index([email])
+}
+
+model Course {
+  id           String      @id @default(cuid())
+  title        String
+  description  String
+  level        String
+  thumbnailUrl String?
+  price        Int         @default(0)
+  currency     String      @default("KZT")
+  lessonsCount Int         @default(0)
+  duration     Int         @default(0)
+  studentsCount Int        @default(0)
+  isPublished  Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  @@index([level])
+}
+
+model Lesson {
+  id       String     @id @default(cuid())
+  title    String
+  type     LessonType
+  duration Int        @default(10)
+  order    Int
+  isFree   Boolean    @default(false)
+  content  Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessonProgress LessonProgress[]
+
+  @@index([courseId])
+  @@index([order])
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  progress    Int       @default(0)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+}
+
+model LessonProgress {
+  id          String    @id @default(cuid())
+  completed   Boolean   @default(false)
+  score       Int?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+model XpLog {
+    id        String   @id @default(cuid())
+    amount    Int
+    reason    String
+    createdAt DateTime @default(now())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+  }
+

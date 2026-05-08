@@ -1,0 +1,25 @@
+// src/app.module.ts
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { PrismaModule } from "./prisma/prisma.module";
+import { AuthModule } from "./auth/auth.module";
+import { CoursesModule } from "./courses/courses.module";
+import { LessonsModule } from "./lessons/lessons.module";
+import { EnrollmentsModule } from "./enrollments/enrollments.module";
+import { XpModule } from "./xp/xp.module";
+import { AdminModule } from './admin/admin.module';
+
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    AuthModule,
+    CoursesModule,
+    LessonsModule,
+    EnrollmentsModule,
+    XpModule,
+    AdminModule,
+  ],
+})
+export class AppModule {}

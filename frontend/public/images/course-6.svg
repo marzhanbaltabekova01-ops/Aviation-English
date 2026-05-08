@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0e1a"/>
+      <stop offset="50%" style="stop-color:#0d1526"/>
+      <stop offset="100%" style="stop-color:#111d38"/>
+    </linearGradient>
+    <linearGradient id="screen-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#001a6e"/>
+      <stop offset="100%" style="stop-color:#000d40"/>
+    </linearGradient>
+    <linearGradient id="table-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2540"/>
+      <stop offset="100%" style="stop-color:#0d1830"/>
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#b8860b"/>
+      <stop offset="50%" style="stop-color:#ffd700"/>
+      <stop offset="100%" style="stop-color:#b8860b"/>
+    </linearGradient>
+    <filter id="screen-blur">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="room-glow">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <linearGradient id="person-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2f5a"/>
+      <stop offset="100%" style="stop-color:#0d1e3e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#bg6)"/>
+
+  <!-- Room walls -->
+  <polygon points="0,0 800,0 800,450 0,450" fill="#0a0f1e"/>
+  <!-- Back wall -->
+  <polygon points="100,50 700,50 700,350 100,350" fill="#0f1828"/>
+  <!-- Floor perspective -->
+  <polygon points="0,350 800,350 800,450 0,450" fill="#080e1c"/>
+  <!-- Ceiling -->
+  <polygon points="0,0 800,0 700,50 100,50" fill="#0c1422"/>
+
+  <!-- Ceiling lights -->
+  <g>
+    <ellipse cx="250" cy="30" rx="30" ry="6" fill="#ffd54f" opacity="0.15" filter="url(#room-glow)"/>
+    <rect x="235" y="26" width="30" height="8" rx="2" fill="#ffe082" opacity="0.6"/>
+    <ellipse cx="550" cy="30" rx="30" ry="6" fill="#ffd54f" opacity="0.15" filter="url(#room-glow)"/>
+    <rect x="535" y="26" width="30" height="8" rx="2" fill="#ffe082" opacity="0.6"/>
+    <!-- Light beams -->
+    <polygon points="235,34 190,350 310,350 265,34" fill="#ffd54f" opacity="0.02"/>
+    <polygon points="535,34 490,350 610,350 565,34" fill="#ffd54f" opacity="0.02"/>
+  </g>
+
+  <!-- Main presentation screen -->
+  <rect x="200" y="70" width="400" height="230" rx="4" fill="#050a14" stroke="#1e3a6e" stroke-width="2"/>
+  <rect x="205" y="75" width="390" height="220" rx="3" fill="url(#screen-grad)"/>
+
+  <!-- Screen content - Aviation chart/presentation -->
+  <g transform="translate(205, 75)">
+    <!-- Header bar -->
+    <rect width="390" height="30" rx="3" fill="#001233"/>
+    <text x="15" y="20" font-size="13" fill="white" font-family="system-ui" font-weight="600">AviationEnglish.kz — Corporate Training Program</text>
+    <!-- ICAO levels chart -->
+    <g transform="translate(20, 45)">
+      <text x="0" y="0" font-size="10" fill="#90caf9" font-family="monospace">ICAO Language Proficiency Scale</text>
+      <!-- Level bars -->
+      <g transform="translate(0, 15)">
+        <g>
+          <text x="0" y="12" font-size="9" fill="#81d4fa">Level 3</text>
+          <rect x="65" y="3" width="200" height="12" rx="2" fill="#0d2a5a"/>
+          <rect x="65" y="3" width="100" height="12" rx="2" fill="#1565c0" opacity="0.8"/>
+          <text x="170" y="12" font-size="8" fill="#4dd0e1">Pre-Operational</text>
+        </g>
+        <g transform="translate(0, 22)">
+          <text x="0" y="12" font-size="9" fill="#81d4fa">Level 4</text>
+          <rect x="65" y="3" width="200" height="12" rx="2" fill="#0d2a5a"/>
+          <rect x="65" y="3" width="150" height="12" rx="2" fill="#1976d2" opacity="0.9"/>
+          <text x="185" y="12" font-size="8" fill="#4dd0e1">Operational ✓</text>
+        </g>
+        <g transform="translate(0, 44)">
+          <text x="0" y="12" font-size="9" fill="#81d4fa">Level 5</text>
+          <rect x="65" y="3" width="200" height="12" rx="2" fill="#0d2a5a"/>
+          <rect x="65" y="3" width="175" height="12" rx="2" fill="#1e88e5" opacity="0.9"/>
+          <text x="215" y="12" font-size="8" fill="#4dd0e1">Extended</text>
+        </g>
+        <g transform="translate(0, 66)">
+          <text x="0" y="12" font-size="9" fill="#ffd54f">Level 6</text>
+          <rect x="65" y="3" width="200" height="12" rx="2" fill="#0d2a5a"/>
+          <rect x="65" y="3" width="200" height="12" rx="2" fill="url(#gold-grad)" opacity="0.8"/>
+          <text x="230" y="12" font-size="8" fill="#fff9c4">Expert ★</text>
+        </g>
+      </g>
+    </g>
+    <!-- Statistics row -->
+    <g transform="translate(20, 155)">
+      <rect width="350" height="50" rx="4" fill="#001233" opacity="0.8"/>
+      <g transform="translate(15, 10)">
+        <text x="0" y="12" font-size="10" fill="#4dd0e1" font-weight="bold">2,400+</text>
+        <text x="0" y="24" font-size="7" fill="#81d4fa">Специалистов</text>
+      </g>
+      <g transform="translate(95" y="0">
+        <text x="0" y="12" font-size="10" fill="#4dd0e1" font-weight="bold">94%</text>
+        <text x="0" y="24" font-size="7" fill="#81d4fa">Успех. сдача</text>
+      </g>
+      <g transform="translate(170, 10)">
+        <text x="0" y="12" font-size="10" fill="#4dd0e1" font-weight="bold">15+</text>
+        <text x="0" y="24" font-size="7" fill="#81d4fa">Авиакомпаний</text>
+      </g>
+      <g transform="translate(245, 10)">
+        <text x="0" y="12" font-size="10" fill="#ffd54f" font-weight="bold">ICAO</text>
+        <text x="0" y="24" font-size="7" fill="#81d4fa">Doc 9835</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Screen frame/bezel bottom -->
+  <rect x="200" y="300" width="400" height="10" rx="2" fill="#0d1a30"/>
+  <rect x="370" y="308" width="60" height="6" rx="3" fill="#162040"/>
+
+  <!-- Conference table -->
+  <ellipse cx="400" cy="400" rx="320" ry="55" fill="url(#table-grad)" stroke="#1e3a6e" stroke-width="1.5"/>
+  <!-- Table top reflection -->
+  <ellipse cx="400" cy="392" rx="315" ry="48" fill="#1a2848" opacity="0.4"/>
+  <ellipse cx="400" cy="388" rx="250" ry="30" fill="#2a3d6a" opacity="0.2"/>
+
+  <!-- People silhouettes sitting at table -->
+  <!-- Person 1 left -->
+  <g transform="translate(130, 340)">
+    <ellipse cx="0" cy="-5" rx="16" ry="14" fill="url(#person-grad)"/><!-- head -->
+    <rect x="-22" y="8" width="44" height="35" rx="5" fill="#0d1e3e"/><!-- body -->
+  </g>
+  <!-- Person 2 left-center -->
+  <g transform="translate(230, 335)">
+    <ellipse cx="0" cy="-5" rx="16" ry="14" fill="#c4956a"/><!-- head (different person) -->
+    <rect x="-22" y="8" width="44" height="35" rx="5" fill="#1a1040"/>
+  </g>
+  <!-- Person 3 center (presenter standing) -->
+  <g transform="translate(400, 295)">
+    <ellipse cx="0" cy="-5" rx="14" ry="13" fill="#e0b090"/>
+    <rect x="-18" y="8" width="36" height="45" rx="4" fill="#0a1e3e"/>
+    <!-- Pointing arm -->
+    <line x1="18" y1="18" x2="45" y2="8" stroke="#c0a080" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- Person 4 right-center -->
+  <g transform="translate(560, 335)">
+    <ellipse cx="0" cy="-5" rx="16" ry="14" fill="url(#person-grad)"/>
+    <rect x="-22" y="8" width="44" height="35" rx="5" fill="#1a2848"/>
+  </g>
+  <!-- Person 5 right -->
+  <g transform="translate(665, 340)">
+    <ellipse cx="0" cy="-5" rx="16" ry="14" fill="#d4a870"/>
+    <rect x="-22" y="8" width="44" height="35" rx="5" fill="#0d1830"/>
+  </g>
+
+  <!-- Laptops on table -->
+  <g fill="#1a2f50" stroke="#2a4070" stroke-width="0.8">
+    <rect x="155" y="378" width="50" height="8" rx="1"/>
+    <rect x="160" y="370" width="40" height="9" rx="1"/>
+    <rect x="260" y="370" width="50" height="8" rx="1"/>
+    <rect x="265" y="362" width="40" height="9" rx="1"/>
+    <rect x="490" y="370" width="50" height="8" rx="1"/>
+    <rect x="495" y="362" width="40" height="9" rx="1"/>
+    <rect x="590" y="378" width="50" height="8" rx="1"/>
+    <rect x="595" y="370" width="40" height="9" rx="1"/>
+  </g>
+  <!-- Laptop screens glow -->
+  <g opacity="0.5" filter="url(#screen-blur)">
+    <rect x="161" y="370" width="38" height="9" rx="1" fill="#4dd0e1"/>
+    <rect x="266" y="362" width="38" height="9" rx="1" fill="#4dd0e1"/>
+    <rect x="496" y="362" width="38" height="9" rx="1" fill="#4dd0e1"/>
+    <rect x="596" y="370" width="38" height="9" rx="1" fill="#4dd0e1"/>
+  </g>
+
+  <!-- ICAO logo / cert on wall -->
+  <g transform="translate(120, 100)">
+    <rect width="60" height="75" rx="4" fill="#0d1e38" stroke="#1e3a6e" stroke-width="1"/>
+    <rect x="5" y="5" width="50" height="30" rx="2" fill="#001233"/>
+    <text x="30" y="16" font-size="7" fill="#ffd54f" text-anchor="middle" font-weight="bold">ICAO</text>
+    <text x="30" y="26" font-size="5" fill="#81d4fa" text-anchor="middle">Doc 9835</text>
+    <line x1="5" y1="40" x2="55" y2="40" stroke="#1e3a6e" stroke-width="0.5"/>
+    <text x="30" y="52" font-size="5" fill="#90caf9" text-anchor="middle">Language</text>
+    <text x="30" y="60" font-size="5" fill="#90caf9" text-anchor="middle">Proficiency</text>
+    <text x="30" y="68" font-size="5" fill="#90caf9" text-anchor="middle">Requirements</text>
+  </g>
+
+  <!-- Air Astana / airline logo hint -->
+  <g transform="translate(625, 100)">
+    <rect width="55" height="55" rx="4" fill="#0d1e38" stroke="#1e3a6e" stroke-width="1"/>
+    <text x="27" y="22" font-size="6" fill="#90caf9" text-anchor="middle">AIR</text>
+    <text x="27" y="32" font-size="8" fill="white" text-anchor="middle" font-weight="bold">ASTANA</text>
+    <polygon points="27,38 22,50 27,47 32,50" fill="#ffd54f" opacity="0.8"/>
+  </g>
+
+  <!-- Text overlay -->
+  <rect x="0" y="410" width="800" height="40" fill="#050a14" opacity="0.9"/>
+  <text x="40" y="431" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="white">Корпоративное обучение</text>
+  <text x="40" y="446" font-family="system-ui, sans-serif" font-size="12" fill="#81d4fa">Индивидуальные программы для авиакомпаний · ICAO Doc 9835</text>
+</svg>

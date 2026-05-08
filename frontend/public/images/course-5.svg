@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#000814"/>
+      <stop offset="30%" style="stop-color:#001440"/>
+      <stop offset="60%" style="stop-color:#0055aa"/>
+      <stop offset="80%" style="stop-color:#1a78d4"/>
+      <stop offset="100%" style="stop-color:#4da6ff"/>
+    </linearGradient>
+    <linearGradient id="wing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e8f0"/>
+      <stop offset="50%" style="stop-color:#b0c4d8"/>
+      <stop offset="100%" style="stop-color:#7a9ab8"/>
+    </linearGradient>
+    <linearGradient id="engine-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c0d0e0"/>
+      <stop offset="50%" style="stop-color:#e8f0f8"/>
+      <stop offset="100%" style="stop-color:#8090a0"/>
+    </linearGradient>
+    <linearGradient id="cloud-base" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95"/>
+      <stop offset="100%" style="stop-color:#c8d8e8;stop-opacity:0.8"/>
+    </linearGradient>
+    <filter id="cloud-shadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#001440" flood-opacity="0.4"/>
+    </filter>
+    <filter id="engine-glow5">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="contrail-blur">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- Sky background - deep blue at top, lighter at horizon -->
+  <rect width="800" height="450" fill="url(#bg5)"/>
+
+  <!-- Stars at top -->
+  <g opacity="0.5">
+    <circle cx="60" cy="20" r="1" fill="white"/><circle cx="140" cy="35" r="1.5" fill="white"/>
+    <circle cx="240" cy="15" r="1" fill="white"/><circle cx="360" cy="28" r="1" fill="white"/>
+    <circle cx="480" cy="18" r="1.5" fill="white"/><circle cx="600" cy="32" r="1" fill="white"/>
+    <circle cx="700" cy="22" r="1" fill="white"/><circle cx="760" cy="40" r="1.5" fill="white"/>
+  </g>
+
+  <!-- Sun/moon glow at horizon right -->
+  <circle cx="720" cy="320" r="60" fill="#ffd54f" opacity="0.06"/>
+  <circle cx="720" cy="320" r="30" fill="#ffeb3b" opacity="0.08"/>
+
+  <!-- Cloud layer below - viewed from above -->
+  <g filter="url(#cloud-shadow)">
+    <!-- Cloud masses -->
+    <ellipse cx="120" cy="390" rx="180" ry="50" fill="url(#cloud-base)" opacity="0.9"/>
+    <ellipse cx="80" cy="385" rx="120" ry="40" fill="white" opacity="0.8"/>
+    <ellipse cx="160" cy="400" rx="140" ry="45" fill="url(#cloud-base)" opacity="0.85"/>
+
+    <ellipse cx="450" cy="420" rx="200" ry="55" fill="url(#cloud-base)" opacity="0.9"/>
+    <ellipse cx="400" cy="415" rx="150" ry="42" fill="white" opacity="0.85"/>
+    <ellipse cx="510" cy="430" rx="160" ry="48" fill="url(#cloud-base)" opacity="0.8"/>
+
+    <ellipse cx="720" cy="400" rx="160" ry="48" fill="url(#cloud-base)" opacity="0.85"/>
+    <ellipse cx="760" cy="410" rx="120" ry="38" fill="white" opacity="0.8"/>
+
+    <!-- Smaller cloud puffs -->
+    <ellipse cx="300" cy="435" rx="80" ry="25" fill="white" opacity="0.7"/>
+    <ellipse cx="600" cy="415" rx="90" ry="28" fill="url(#cloud-base)" opacity="0.75"/>
+  </g>
+
+  <!-- Contrails behind airplane -->
+  <g filter="url(#contrail-blur)" opacity="0.6">
+    <line x1="0" y1="195" x2="320" y2="215" stroke="white" stroke-width="6"/>
+    <line x1="0" y1="245" x2="320" y2="265" stroke="white" stroke-width="6"/>
+    <!-- Contrail fade -->
+    <line x1="0" y1="195" x2="160" y2="205" stroke="white" stroke-width="4"/>
+    <line x1="0" y1="245" x2="160" y2="255" stroke="white" stroke-width="4"/>
+  </g>
+  <g opacity="0.25">
+    <line x1="0" y1="195" x2="320" y2="215" stroke="white" stroke-width="3"/>
+    <line x1="0" y1="245" x2="320" y2="265" stroke="white" stroke-width="3"/>
+  </g>
+
+  <!-- ===== MAIN AIRCRAFT - Large, detailed, front-right view ===== -->
+  <g transform="translate(400, 230)">
+    <!-- Shadow on clouds below -->
+    <ellipse cx="20" cy="160" rx="120" ry="20" fill="#001440" opacity="0.25" filter="url(#contrail-blur)"/>
+
+    <!-- Main fuselage -->
+    <ellipse cx="20" cy="0" rx="160" ry="20" fill="white" opacity="0.97"/>
+    <!-- Fuselage shading top -->
+    <ellipse cx="20" cy="-8" rx="155" ry="10" fill="#e8f0f8" opacity="0.6"/>
+    <!-- Nose -->
+    <ellipse cx="168" cy="0" rx="22" ry="14" fill="#d0dce8"/>
+    <!-- Cockpit windows -->
+    <g fill="#1a3a6b" opacity="0.8">
+      <ellipse cx="168" cy="-5" rx="12" ry="6"/>
+      <ellipse cx="153" cy="-7" rx="8" ry="5"/>
+    </g>
+    <!-- Cockpit window glare -->
+    <ellipse cx="170" cy="-7" rx="5" ry="3" fill="white" opacity="0.4"/>
+
+    <!-- Cabin windows (row) -->
+    <g fill="#1a3a6b" opacity="0.7">
+      <rect x="120" y="-7" width="10" height="8" rx="2"/>
+      <rect x="104" y="-7" width="10" height="8" rx="2"/>
+      <rect x="88" y="-7" width="10" height="8" rx="2"/>
+      <rect x="72" y="-7" width="10" height="8" rx="2"/>
+      <rect x="56" y="-7" width="10" height="8" rx="2"/>
+      <rect x="40" y="-7" width="10" height="8" rx="2"/>
+      <rect x="24" y="-7" width="10" height="8" rx="2"/>
+      <rect x="8" y="-7" width="10" height="8" rx="2"/>
+      <rect x="-8" y="-7" width="10" height="8" rx="2"/>
+      <rect x="-24" y="-7" width="10" height="8" rx="2"/>
+    </g>
+    <!-- Window glare -->
+    <g fill="white" opacity="0.3">
+      <rect x="121" y="-7" width="4" height="3" rx="1"/>
+      <rect x="89" y="-7" width="4" height="3" rx="1"/>
+      <rect x="57" y="-7" width="4" height="3" rx="1"/>
+      <rect x="25" y="-7" width="4" height="3" rx="1"/>
+    </g>
+
+    <!-- Belly of fuselage -->
+    <ellipse cx="20" cy="8" rx="155" ry="12" fill="#8090a8" opacity="0.5"/>
+
+    <!-- LEFT WING (near, larger) -->
+    <g>
+      <!-- Main wing surface -->
+      <polygon points="-20,-15 -160,-80 -200,-88 -190,-15 -20,8" fill="url(#wing-grad)"/>
+      <!-- Wing top shading -->
+      <polygon points="-20,-15 -160,-80 -170,-80 -25,-15" fill="white" opacity="0.2"/>
+      <!-- Wing leading edge -->
+      <line x1="-20" y1="-15" x2="-200" y2="-88" stroke="#c0d0e0" stroke-width="1"/>
+      <!-- Winglet -->
+      <polygon points="-196,-85 -215,-110 -220,-108 -205,-82" fill="#d0dce8"/>
+      <!-- Wing flap lines -->
+      <g stroke="#90a8c0" stroke-width="0.8" opacity="0.5">
+        <line x1="-40" y1="-20" x2="-170" y2="-82"/>
+        <line x1="-80" y1="-22" x2="-180" y2="-84"/>
+      </g>
+      <!-- Engine 1 (closer) -->
+      <g transform="translate(-110, -52)">
+        <ellipse cx="0" cy="0" rx="28" ry="10" fill="url(#engine-grad)"/>
+        <ellipse cx="28" cy="0" rx="10" ry="8" fill="#d0d8e0"/>
+        <ellipse cx="-28" cy="0" rx="10" ry="9" fill="#404858"/>
+        <!-- Engine blur/thrust -->
+        <ellipse cx="-38" cy="0" rx="12" ry="5" fill="#8090a0" opacity="0.4" filter="url(#contrail-blur)"/>
+        <!-- Engine nacelle highlight -->
+        <ellipse cx="0" cy="-5" rx="26" ry="5" fill="white" opacity="0.3"/>
+      </g>
+      <!-- Engine 2 (farther) -->
+      <g transform="translate(-165, -78)">
+        <ellipse cx="0" cy="0" rx="22" ry="8" fill="url(#engine-grad)" opacity="0.9"/>
+        <ellipse cx="22" cy="0" rx="8" ry="6" fill="#d0d8e0"/>
+        <ellipse cx="-22" cy="0" rx="8" ry="7" fill="#404858"/>
+        <ellipse cx="0" cy="-4" rx="20" ry="4" fill="white" opacity="0.25"/>
+      </g>
+    </g>
+
+    <!-- RIGHT WING (far, foreshortened) -->
+    <polygon points="-20,-15 60,-50 80,-55 70,-15 -20,8" fill="#c8d8e8" opacity="0.8"/>
+    <!-- Right engine -->
+    <g transform="translate(40, -35)" opacity="0.85">
+      <ellipse cx="0" cy="0" rx="18" ry="6" fill="url(#engine-grad)"/>
+      <ellipse cx="-18" cy="0" rx="6" ry="5" fill="#505868"/>
+    </g>
+
+    <!-- Vertical stabilizer -->
+    <polygon points="-148,-15 -158,-55 -145,-58 -135,-15" fill="#d0dce8"/>
+    <polygon points="-148,-15 -158,-55 -148,-56 -140,-15" fill="white" opacity="0.3"/>
+    <!-- Horizontal stabilizer left -->
+    <polygon points="-138,-14 -190,-36 -195,-34 -185,-14" fill="#c8d4e0"/>
+    <!-- Horizontal stabilizer right -->
+    <polygon points="-138,-14 -100,-26 -100,-24 -140,-12" fill="#c0d0dc"/>
+
+    <!-- Airline livery stripe -->
+    <rect x="-145" y="-4" width="300" height="5" rx="2" fill="#1565c0" opacity="0.7"/>
+    <rect x="-145" y="2" width="200" height="3" rx="1" fill="#0d47a1" opacity="0.5"/>
+
+    <!-- Landing lights (off, but visible) -->
+    <circle cx="165" cy="8" r="3" fill="#e8e0d0" opacity="0.6"/>
+  </g>
+
+  <!-- Navigation lights -->
+  <circle cx="198" cy="150" r="4" fill="#ff1744" opacity="0.9" filter="url(#engine-glow5)"/>
+  <circle cx="602" cy="180" r="4" fill="#00e676" opacity="0.9" filter="url(#engine-glow5)"/>
+
+  <!-- Text overlay -->
+  <rect x="0" y="0" width="800" height="65" fill="#000814" opacity="0.5"/>
+  <text x="40" y="32" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="white" opacity="0.95">ICAO Level 5–6 · Продвинутый</text>
+  <text x="40" y="54" font-family="system-ui, sans-serif" font-size="13" fill="#81d4fa" opacity="0.85">Расширенный и экспертный уровень · FL350 · M.85</text>
+</svg>
