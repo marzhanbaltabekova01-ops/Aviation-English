@@ -16,25 +16,37 @@ import XpLevelCard from '@/components/ui/XpLevelCard'
 
 const mockStats: DashboardStats = { streakDays: 7, lessonsCompleted: 24, icaoProgress: 68, coursesCompleted: 2 }
 
-const mockEnrollments: Enrollment[] = [
+const mockEnrollments = [
   {
     id: 'e-1', userId: 'u-1', courseId: 'course-1', progress: 100,
     startedAt: '2024-01-15T10:00:00Z', completedAt: '2024-02-01T14:30:00Z',
-    course: { id: 'course-1', title: 'Основы авиационного английского', description: 'Вводный курс', level: 'Pre-Aviation', thumbnailUrl: '/images/course-1.jpg', price: 0, currency: 'KZT', lessonsCount: 12, duration: 8, studentsCount: 847 },
+    course: {
+      id: 'course-1',
+      title: 'Основы авиационного английского',
+      titleKz: 'Авиациялық ағылшын тілінің негіздері',
+      description: 'Вводный курс', level: 'Pre-Aviation',
+      thumbnailUrl: '/images/course-1.jpg', price: 0, currency: 'KZT', lessonsCount: 12, duration: 8, studentsCount: 847
+    },
   },
   {
     id: 'e-2', userId: 'u-1', courseId: 'course-3', progress: 45,
     startedAt: '2024-02-05T09:00:00Z',
-    course: { id: 'course-3', title: 'ICAO Level 4 для пилотов', description: 'Подготовка к ICAO Level 4', level: 'ICAO Level 4', thumbnailUrl: '/images/course-3.jpg', price: 120000, currency: 'KZT', lessonsCount: 36, duration: 24, studentsCount: 1256 },
+    course: {
+      id: 'course-3',
+      title: 'ICAO Level 4 для пилотов',
+      titleKz: 'Ұшқыштарға арналған ICAO Level 4',
+      description: 'Подготовка к ICAO Level 4', level: 'ICAO Level 4',
+      thumbnailUrl: '/images/course-3.jpg', price: 120000, currency: 'KZT', lessonsCount: 36, duration: 24, studentsCount: 1256
+    },
   },
 ]
 
 const levelColors: Record<string, string> = {
-  'Pre-Aviation': 'bg-emerald-100 text-emerald-700',
-  'ICAO Level 3': 'bg-amber-100 text-amber-700',
-  'ICAO Level 4': 'bg-sky-100 text-sky-700',
+  'Pre-Aviation':   'bg-emerald-100 text-emerald-700',
+  'ICAO Level 3':   'bg-amber-100 text-amber-700',
+  'ICAO Level 4':   'bg-sky-100 text-sky-700',
   'ICAO Level 5-6': 'bg-indigo-100 text-indigo-700',
-  'Corporate': 'bg-slate-100 text-slate-700',
+  'Corporate':      'bg-slate-100 text-slate-700',
 }
 
 export default function DashboardPage() {
@@ -83,16 +95,16 @@ export default function DashboardPage() {
   ]
 
   const sidebarLinks = [
-    { href: '/dashboard',  label: T.dashboard,      icon: LayoutDashboard },
-    { href: '/dashboard#courses', label: T.myCourses, icon: BookOpen },
-    { href: '/lessons/l-2', label: T.continuelesson, icon: Play },
+    { href: '/dashboard',       label: T.dashboard,      icon: LayoutDashboard },
+    { href: '/dashboard#courses', label: T.myCourses,    icon: BookOpen },
+    { href: '/lessons/l-2',     label: T.continuelesson, icon: Play },
   ]
 
   const statCards = [
-    { key: 'streakDays',        label: T.streakDays,   icon: Flame,         color: 'text-orange-500', bgColor: 'bg-orange-100' },
-    { key: 'lessonsCompleted',  label: T.lessonsComp,  icon: Award,         color: 'text-sky-500',    bgColor: 'bg-sky-100' },
-    { key: 'icaoProgress',      label: T.icaoProgress, icon: Target,        color: 'text-emerald-500',bgColor: 'bg-emerald-100', suffix: '%' },
-    { key: 'coursesCompleted',  label: T.coursesComp,  icon: GraduationCap, color: 'text-indigo-500', bgColor: 'bg-indigo-100' },
+    { key: 'streakDays',       label: T.streakDays,  icon: Flame,         color: 'text-orange-500', bgColor: 'bg-orange-100' },
+    { key: 'lessonsCompleted', label: T.lessonsComp, icon: Award,         color: 'text-sky-500',    bgColor: 'bg-sky-100' },
+    { key: 'icaoProgress',     label: T.icaoProgress,icon: Target,        color: 'text-emerald-500',bgColor: 'bg-emerald-100', suffix: '%' },
+    { key: 'coursesCompleted', label: T.coursesComp, icon: GraduationCap, color: 'text-indigo-500', bgColor: 'bg-indigo-100' },
   ]
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -160,39 +172,44 @@ export default function DashboardPage() {
                   <Link href="/courses" className="text-sm text-primary hover:text-primary/80 transition-colors">{T.allCourses}</Link>
                 </div>
                 <div className="space-y-4">
-                  {mockEnrollments.map(enrollment => (
-                    <div key={enrollment.id} className="bg-card rounded-xl border border-border p-5">
-                      <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                          <BookOpen className="h-6 w-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', levelColors[enrollment.course?.level || ''] || 'bg-gray-100 text-gray-700')}>
-                              {enrollment.course?.level}
-                            </span>
-                            {enrollment.progress === 100 && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-success/10 text-success font-medium">{T.completed}</span>
-                            )}
+                  {mockEnrollments.map(enrollment => {
+                    const courseTitle = lang === 'kz' && (enrollment.course as any).titleKz
+                      ? (enrollment.course as any).titleKz
+                      : enrollment.course?.title
+                    return (
+                      <div key={enrollment.id} className="bg-card rounded-xl border border-border p-5">
+                        <div className="flex items-start gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                            <BookOpen className="h-6 w-6 text-primary" />
                           </div>
-                          <h3 className="font-semibold text-foreground truncate">{enrollment.course?.title}</h3>
-                          <div className="mt-3">
-                            <div className="flex items-center justify-between text-sm mb-1">
-                              <span className="text-muted-foreground">{T.progress}</span>
-                              <span className="font-medium text-foreground">{enrollment.progress}%</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', levelColors[enrollment.course?.level || ''] || 'bg-gray-100 text-gray-700')}>
+                                {enrollment.course?.level}
+                              </span>
+                              {enrollment.progress === 100 && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-success/10 text-success font-medium">{T.completed}</span>
+                              )}
                             </div>
-                            <ProgressBar value={enrollment.progress} variant={enrollment.progress === 100 ? 'success' : 'default'} size="sm" />
+                            <h3 className="font-semibold text-foreground truncate">{courseTitle}</h3>
+                            <div className="mt-3">
+                              <div className="flex items-center justify-between text-sm mb-1">
+                                <span className="text-muted-foreground">{T.progress}</span>
+                                <span className="font-medium text-foreground">{enrollment.progress}%</span>
+                              </div>
+                              <ProgressBar value={enrollment.progress} variant={enrollment.progress === 100 ? 'success' : 'default'} size="sm" />
+                            </div>
                           </div>
+                          <Link href={enrollment.progress === 100 ? `/courses/${enrollment.courseId}` : '/lessons/l-2'}>
+                            <Button size="sm" variant={enrollment.progress === 100 ? 'outline' : 'default'} className="gap-2">
+                              {enrollment.progress === 100 ? T.repeat : T.continue}
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </Link>
                         </div>
-                        <Link href={enrollment.progress === 100 ? `/courses/${enrollment.courseId}` : '/lessons/l-2'}>
-                          <Button size="sm" variant={enrollment.progress === 100 ? 'outline' : 'default'} className="gap-2">
-                            {enrollment.progress === 100 ? T.repeat : T.continue}
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </Link>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
 

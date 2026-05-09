@@ -41,6 +41,7 @@ export default function CoursesPage() {
   const { user } = useAuth();
   const { lang } = useLang();
   const [courses, setCourses] = useState<Course[]>(MOCK_COURSES_RU as Course[]);
+  const [apiCourses, setApiCourses] = useState<Course[]>([]);
   const [enrolledIds, setEnrolledIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [levelFilter, setLevelFilter] = useState("all");
@@ -50,25 +51,21 @@ export default function CoursesPage() {
   const LEVELS = ["all", "Pre-Aviation", "ICAO Level 3", "ICAO Level 4", "ICAO Level 5-6", "Corporate"];
   const allLabel = tx(lang as Lang, "Все", "Барлығы");
 
-  // Update mock courses when language changes
+  // Apply language whenever lang or apiCourses changes
   useEffect(() => {
-    const mockData = lang === 'kz' ? MOCK_COURSES_KZ : MOCK_COURSES_RU;
-    setCourses(prev => prev.map((c, i) => ({
-      ...c,
-      title: mockData[i]?.title ?? c.title,
-      description: mockData[i]?.description ?? c.description,
+    const base = apiCourses.length > 0 ? apiCourses : (MOCK_COURSES_RU as Course[]);
+    setCourses(base.map((course, i) => ({
+      ...course,
+      title: lang === 'kz' ? (MOCK_COURSES_KZ[i]?.title ?? course.title) : (MOCK_COURSES_RU[i]?.title ?? course.title),
+      description: lang === 'kz' ? (MOCK_COURSES_KZ[i]?.description ?? course.description) : (MOCK_COURSES_RU[i]?.description ?? course.description),
+      thumbnailUrl: course.thumbnailUrl?.startsWith("/images/course-") ? course.thumbnailUrl : (MOCK_COURSES_RU[i]?.thumbnailUrl ?? course.thumbnailUrl),
     })));
-  }, [lang]);
+  }, [lang, apiCourses]);
 
   useEffect(() => {
     coursesApi.getAll().then(data => {
       if (data && data.length > 0) {
-        const mockBase = lang === 'kz' ? MOCK_COURSES_KZ : MOCK_COURSES_RU;
-        const merged = data.map((course: Course, i: number) => ({
-          ...course,
-          thumbnailUrl: course.thumbnailUrl?.startsWith("/images/course-") ? course.thumbnailUrl : (mockBase[i]?.thumbnailUrl ?? course.thumbnailUrl),
-        }));
-        setCourses(merged);
+        setApiCourses(data);
       }
     }).catch(() => {});
     if (user) {
