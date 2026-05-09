@@ -6,7 +6,7 @@
   "build": "nest build",
   "start": "npx prisma migrate deploy && npx prisma db seed && node dist/src/main.js",
   "start:dev": "nest start --watch",
-  "start:prod": "npx prisma migrate deploy && node dist/src/main.js"
+  "start:prod": "npx prisma migrate deploy && npx prisma db seed && node dist/src/main.js"
 },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
