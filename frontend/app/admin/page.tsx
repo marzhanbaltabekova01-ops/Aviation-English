@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import {
   Users, BookOpen, GraduationCap, TrendingUp, ChevronRight,
   Search, ArrowLeft, CheckCircle2, Clock, Loader2, AlertCircle,
-  Plus, Pencil, Trash2, Shield, ShieldOff, X, Save, BookMarked,
+  Plus, Pencil, Trash2, Shield, ShieldOff, X, Save, FileText,
 } from "lucide-react";
 
 interface Stats {
@@ -53,11 +53,10 @@ const TYPE_ICON: Record<string, string> = {
 const LEVELS = ['Pre-Aviation','ICAO Level 3','ICAO Level 4','ICAO Level 5-6','Corporate'];
 const LESSON_TYPES = ['READING','LISTENING','VOCABULARY','QUIZ'];
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+function Modal({ title, onClose, children, wide }: { title: string; onClose: () => void; children: React.ReactNode; wide?: boolean }) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-card border border-border rounded-xl w-full max-w-lg shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className={cn("bg-card border border-border rounded-xl shadow-2xl my-4", wide ? "w-full max-w-3xl" : "w-full max-w-lg")}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="font-semibold text-foreground">{title}</h2>
           <button onClick={onClose} className="p-1 rounded hover:bg-muted transition-colors">
@@ -70,7 +69,6 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   );
 }
 
-// ── Confirm Dialog ────────────────────────────────────────────────────────────
 function ConfirmDialog({ message, onConfirm, onCancel }: { message: string; onConfirm: () => void; onCancel: () => void }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -80,6 +78,220 @@ function ConfirmDialog({ message, onConfirm, onCancel }: { message: string; onCo
           <Button variant="outline" onClick={onCancel}>Отмена</Button>
           <Button onClick={onConfirm} className="bg-destructive hover:bg-destructive/90 text-white">Удалить</Button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Content Editor ────────────────────────────────────────────────────────────
+function ContentEditor({ lessonId, lessonType, onClose }: { lessonId: string; lessonType: string; onClose: () => void }) {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [content, setContent] = useState<any>({});
+
+  useEffect(() => {
+    api.get(`/api/lessons/${lessonId}`).then(res => {
+      setContent(res.data.content ?? {});
+    }).catch(() => setContent({})).finally(() => setLoading(false));
+  }, [lessonId]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.put(`/api/admin/lessons/${lessonId}`, { content });
+      onClose();
+    } catch (e: any) {
+      alert(e?.response?.data?.message || 'Ошибка сохранения');
+    } finally { setSaving(false); }
+  };
+
+  if (loading) return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+
+  const inputClass = "w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary";
+  const labelClass = "text-xs text-muted-foreground block mb-1 font-medium";
+
+  return (
+    <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-1">
+
+      {/* ── READING ── */}
+      {lessonType === 'READING' && (
+        <>
+          <div>
+            <label className={labelClass}>Заголовок статьи</label>
+            <input className={inputClass} value={content.article?.title ?? ''}
+              onChange={e => setContent((p: any) => ({ ...p, article: { ...p.article, title: e.target.value } }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Абзацы (каждый с новой строки)</label>
+            <textarea rows={6} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={(content.article?.paragraphs ?? []).join('\n')}
+              onChange={e => setContent((p: any) => ({ ...p, article: { ...p.article, paragraphs: e.target.value.split('\n') } }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Казахские абзацы (каждый с новой строки)</label>
+            <textarea rows={6} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={(content.article?.paragraphsKz ?? []).join('\n')}
+              onChange={e => setContent((p: any) => ({ ...p, article: { ...p.article, paragraphsKz: e.target.value.split('\n') } }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Ключевые моменты (каждый с новой строки)</label>
+            <textarea rows={4} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={(content.article?.keyPoints ?? []).join('\n')}
+              onChange={e => setContent((p: any) => ({ ...p, article: { ...p.article, keyPoints: e.target.value.split('\n') } }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Ключевые моменты (казахский)</label>
+            <textarea rows={4} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={(content.article?.keyPointsKz ?? []).join('\n')}
+              onChange={e => setContent((p: any) => ({ ...p, article: { ...p.article, keyPointsKz: e.target.value.split('\n') } }))} />
+          </div>
+        </>
+      )}
+
+      {/* ── LISTENING ── */}
+      {lessonType === 'LISTENING' && (
+        <>
+          <div>
+            <label className={labelClass}>Транскрипция</label>
+            <textarea rows={5} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={content.transcript ?? ''}
+              onChange={e => setContent((p: any) => ({ ...p, transcript: e.target.value }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Ключевые фразы (через запятую)</label>
+            <input className={inputClass} value={(content.keyPhrases ?? []).join(', ')}
+              onChange={e => setContent((p: any) => ({ ...p, keyPhrases: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean) }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Правило ICAO</label>
+            <input className={inputClass} value={content.icaoRule ?? ''}
+              onChange={e => setContent((p: any) => ({ ...p, icaoRule: e.target.value }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Правило ICAO (казахский)</label>
+            <input className={inputClass} value={content.icaoRuleKz ?? ''}
+              onChange={e => setContent((p: any) => ({ ...p, icaoRuleKz: e.target.value }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Словарь (формат: слово|перевод|пример — каждое с новой строки)</label>
+            <textarea rows={5} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={(content.vocabulary ?? []).map((v: any) => `${v.word}|${v.translation}|${v.example ?? ''}`).join('\n')}
+              onChange={e => {
+                const items = e.target.value.split('\n').filter(Boolean).map(line => {
+                  const [word, translation, example] = line.split('|');
+                  return { word: word?.trim(), translation: translation?.trim(), example: example?.trim() };
+                });
+                setContent((p: any) => ({ ...p, vocabulary: items }));
+              }} />
+            <p className="text-xs text-muted-foreground mt-1">Пример: Cleared|Разрешено|Cleared for takeoff</p>
+          </div>
+        </>
+      )}
+
+      {/* ── VOCABULARY ── */}
+      {lessonType === 'VOCABULARY' && (
+        <>
+          <div>
+            <label className={labelClass}>Тема урока</label>
+            <input className={inputClass} value={content.topic ?? ''}
+              onChange={e => setContent((p: any) => ({ ...p, topic: e.target.value }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Тема урока (казахский)</label>
+            <input className={inputClass} value={content.topicKz ?? ''}
+              onChange={e => setContent((p: any) => ({ ...p, topicKz: e.target.value }))} />
+          </div>
+          <div>
+            <label className={labelClass}>Слова (формат: слово|перевод|произношение|пример — каждое с новой строки)</label>
+            <textarea rows={8} className={inputClass + " resize-none"} style={{resize:'vertical'}}
+              value={(content.vocabularyItems ?? []).map((v: any) => `${v.word}|${v.translation}|${v.pronunciation ?? ''}|${v.example ?? ''}`).join('\n')}
+              onChange={e => {
+                const items = e.target.value.split('\n').filter(Boolean).map(line => {
+                  const [word, translation, pronunciation, example] = line.split('|');
+                  return { word: word?.trim(), translation: translation?.trim(), pronunciation: pronunciation?.trim(), example: example?.trim() };
+                });
+                setContent((p: any) => ({ ...p, vocabularyItems: items }));
+              }} />
+            <p className="text-xs text-muted-foreground mt-1">Пример: Mayday|Бедствие|/ˈmeɪdeɪ/|Mayday mayday mayday</p>
+          </div>
+        </>
+      )}
+
+      {/* ── QUIZ ── */}
+      {lessonType === 'QUIZ' && (
+        <>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className={labelClass + " mb-0"}>Вопросы теста</label>
+              <button onClick={() => setContent((p: any) => ({
+                ...p, questions: [...(p.questions ?? []), { id: `q${Date.now()}`, question: '', questionKz: '', options: ['','','',''], optionsKz: ['','','',''], correctAnswer: 0, explanation: '', explanationKz: '' }]
+              }))} className="text-xs text-primary hover:underline flex items-center gap-1">
+                <Plus className="h-3 w-3" /> Добавить вопрос
+              </button>
+            </div>
+            {(content.questions ?? []).map((q: any, qi: number) => (
+              <div key={q.id ?? qi} className="border border-border rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">Вопрос {qi + 1}</span>
+                  <button onClick={() => setContent((p: any) => ({ ...p, questions: p.questions.filter((_: any, i: number) => i !== qi) }))}
+                    className="p-1 rounded hover:bg-red-50 transition-colors">
+                    <X className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelClass}>Вопрос (рус)</label>
+                    <input className={inputClass} value={q.question}
+                      onChange={e => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, question: e.target.value } : qq) }))} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Вопрос (каз)</label>
+                    <input className={inputClass} value={q.questionKz ?? ''}
+                      onChange={e => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, questionKz: e.target.value } : qq) }))} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className={labelClass}>Варианты ответов</label>
+                  {(q.options ?? ['','','','']).map((opt: string, oi: number) => (
+                    <div key={oi} className="flex items-center gap-2">
+                      <input type="radio" name={`correct-${qi}`} checked={q.correctAnswer === oi}
+                        onChange={() => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, correctAnswer: oi } : qq) }))}
+                        className="accent-primary flex-shrink-0" title="Правильный ответ" />
+                      <input className={inputClass} placeholder={`Вариант ${oi + 1} (рус)`} value={opt}
+                        onChange={e => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, options: qq.options.map((o: string, j: number) => j === oi ? e.target.value : o) } : qq) }))} />
+                      <input className={inputClass} placeholder={`Вариант ${oi + 1} (каз)`} value={q.optionsKz?.[oi] ?? ''}
+                        onChange={e => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, optionsKz: (qq.optionsKz ?? ['','','','']).map((o: string, j: number) => j === oi ? e.target.value : o) } : qq) }))} />
+                    </div>
+                  ))}
+                  <p className="text-xs text-muted-foreground">Выбери radio кнопку рядом с правильным ответом</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelClass}>Объяснение (рус)</label>
+                    <textarea rows={2} className={inputClass + " resize-none"} value={q.explanation}
+                      onChange={e => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, explanation: e.target.value } : qq) }))} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Объяснение (каз)</label>
+                    <textarea rows={2} className={inputClass + " resize-none"} value={q.explanationKz ?? ''}
+                      onChange={e => setContent((p: any) => ({ ...p, questions: p.questions.map((qq: any, i: number) => i === qi ? { ...qq, explanationKz: e.target.value } : qq) }))} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            {(content.questions ?? []).length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">Нет вопросов. Нажми "Добавить вопрос".</p>
+            )}
+          </div>
+        </>
+      )}
+
+      <div className="flex gap-3 justify-end pt-2 border-t border-border sticky bottom-0 bg-card pb-1">
+        <Button variant="outline" onClick={onClose}>Отмена</Button>
+        <Button onClick={save} disabled={saving} className="gap-2">
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          Сохранить содержимое
+        </Button>
       </div>
     </div>
   );
@@ -98,13 +310,12 @@ export default function AdminPage() {
   const [loadingUser, setLoadingUser] = useState(false);
   const [error, setError] = useState('');
 
-  // Modals
   const [courseModal, setCourseModal] = useState<{mode:'create'|'edit'; data?: CourseRow} | null>(null);
   const [lessonModal, setLessonModal] = useState<{mode:'create'|'edit'; data?: LessonRow} | null>(null);
+  const [contentModal, setContentModal] = useState<{id: string; type: string; title: string} | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{type:'user'|'course'|'lesson'; id: string; name: string} | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Form state
   const [courseForm, setCourseForm] = useState({ title:'', description:'', level:'Pre-Aviation', price:0, thumbnailUrl:'', duration:0 });
   const [lessonForm, setLessonForm] = useState({ title:'', type:'READING', duration:15, order:1, isFree:false, courseId:'' });
 
@@ -129,9 +340,7 @@ export default function AdminPage() {
       setLessons(lessonsRes.data);
     } catch (e: any) {
       setError(e?.response?.data?.message || 'Ошибка загрузки данных');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const openUser = async (id: string) => {
@@ -142,7 +351,6 @@ export default function AdminPage() {
     } finally { setLoadingUser(false); }
   };
 
-  // ── User actions ───────────────────────────────────────────────────────────
   const changeRole = async (userId: string, role: 'USER'|'ADMIN') => {
     await api.patch(`/api/admin/users/${userId}/role`, { role });
     setUsers(prev => prev.map(u => u.id === userId ? {...u, role} : u));
@@ -154,7 +362,6 @@ export default function AdminPage() {
     setUsers(prev => prev.map(u => u.id === userId ? {...u, blocked} : u));
   };
 
-  // ── Course actions ─────────────────────────────────────────────────────────
   const openCreateCourse = () => {
     setCourseForm({ title:'', description:'', level:'Pre-Aviation', price:0, thumbnailUrl:'', duration:0 });
     setCourseModal({ mode: 'create' });
@@ -174,12 +381,10 @@ export default function AdminPage() {
         setCourses(prev => prev.map(c => c.id === courseModal.data!.id ? {...c, ...courseForm} : c));
       }
       setCourseModal(null);
-    } catch (e: any) {
-      alert(e?.response?.data?.message || 'Ошибка сохранения');
-    } finally { setSaving(false); }
+    } catch (e: any) { alert(e?.response?.data?.message || 'Ошибка сохранения'); }
+    finally { setSaving(false); }
   };
 
-  // ── Lesson actions ─────────────────────────────────────────────────────────
   const openCreateLesson = () => {
     setLessonForm({ title:'', type:'READING', duration:15, order:1, isFree:false, courseId: courses[0]?.id ?? '' });
     setLessonModal({ mode: 'create' });
@@ -199,12 +404,10 @@ export default function AdminPage() {
         setLessons(prev => prev.map(l => l.id === lessonModal.data!.id ? {...l, ...lessonForm} : l));
       }
       setLessonModal(null);
-    } catch (e: any) {
-      alert(e?.response?.data?.message || 'Ошибка сохранения');
-    } finally { setSaving(false); }
+    } catch (e: any) { alert(e?.response?.data?.message || 'Ошибка сохранения'); }
+    finally { setSaving(false); }
   };
 
-  // ── Delete ─────────────────────────────────────────────────────────────────
   const handleDelete = async () => {
     if (!confirmDelete) return;
     try {
@@ -213,9 +416,7 @@ export default function AdminPage() {
       if (type === 'course') { await api.delete(`/api/admin/courses/${id}`); setCourses(prev => prev.filter(c => c.id !== id)); }
       if (type === 'lesson') { await api.delete(`/api/admin/lessons/${id}`); setLessons(prev => prev.filter(l => l.id !== id)); }
       setConfirmDelete(null);
-    } catch (e: any) {
-      alert(e?.response?.data?.message || 'Ошибка удаления');
-    }
+    } catch (e: any) { alert(e?.response?.data?.message || 'Ошибка удаления'); }
   };
 
   const filteredUsers = users.filter(u =>
@@ -223,17 +424,13 @@ export default function AdminPage() {
   );
 
   if (loading) return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </main>
+    <div className="min-h-screen flex flex-col"><Navbar />
+      <main className="flex-1 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></main>
     </div>
   );
 
   if (error) return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
+    <div className="min-h-screen flex flex-col"><Navbar />
       <main className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-3" />
@@ -244,20 +441,13 @@ export default function AdminPage() {
     </div>
   );
 
-  // ── User detail view ───────────────────────────────────────────────────────
   if (selectedUser) return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Navbar />
+    <div className="min-h-screen flex flex-col bg-background"><Navbar />
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8">
-        <button onClick={() => setSelectedUser(null)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <button onClick={() => setSelectedUser(null)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Назад к списку
         </button>
-        {loadingUser ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : (
+        {loadingUser ? <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div> : (
           <div className="space-y-6">
             <div className="bg-card border border-border rounded-xl p-6">
               <div className="flex items-start justify-between gap-4">
@@ -269,83 +459,58 @@ export default function AdminPage() {
                     <h1 className="text-xl font-bold text-foreground">{selectedUser.firstName} {selectedUser.lastName}</h1>
                     <p className="text-muted-foreground text-sm">{selectedUser.email}</p>
                     <div className="flex gap-2 mt-2 flex-wrap">
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                        {SPEC_LABELS[selectedUser.specialization] ?? selectedUser.specialization}
-                      </span>
-                      <span className={cn("text-xs px-2 py-1 rounded-full", selectedUser.role === 'ADMIN' ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground")}>
-                        {selectedUser.role}
-                      </span>
-                      <span className="text-xs text-muted-foreground py-1">
-                        Рег: {new Date(selectedUser.createdAt).toLocaleDateString('ru-RU')}
-                      </span>
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">{SPEC_LABELS[selectedUser.specialization] ?? selectedUser.specialization}</span>
+                      <span className={cn("text-xs px-2 py-1 rounded-full", selectedUser.role === 'ADMIN' ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground")}>{selectedUser.role}</span>
+                      <span className="text-xs text-muted-foreground py-1">Рег: {new Date(selectedUser.createdAt).toLocaleDateString('ru-RU')}</span>
                     </div>
                   </div>
                 </div>
-                {/* Actions */}
                 <div className="flex gap-2 flex-shrink-0">
-                  <Button size="sm" variant="outline"
-                    onClick={() => changeRole(selectedUser.id, selectedUser.role === 'ADMIN' ? 'USER' : 'ADMIN')}
-                    className="gap-1.5">
+                  <Button size="sm" variant="outline" onClick={() => changeRole(selectedUser.id, selectedUser.role === 'ADMIN' ? 'USER' : 'ADMIN')} className="gap-1.5">
                     {selectedUser.role === 'ADMIN' ? <ShieldOff className="h-3.5 w-3.5" /> : <Shield className="h-3.5 w-3.5" />}
                     {selectedUser.role === 'ADMIN' ? 'Снять ADMIN' : 'Дать ADMIN'}
                   </Button>
-                  <Button size="sm" variant="outline"
-                    onClick={() => setConfirmDelete({ type:'user', id: selectedUser.id, name: `${selectedUser.firstName} ${selectedUser.lastName}` })}
-                    className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10">
+                  <Button size="sm" variant="outline" onClick={() => setConfirmDelete({ type:'user', id: selectedUser.id, name: `${selectedUser.firstName} ${selectedUser.lastName}` })} className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10">
                     <Trash2 className="h-3.5 w-3.5" /> Удалить
                   </Button>
                 </div>
               </div>
             </div>
-
             <div className="bg-card border border-border rounded-xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-border">
-                <h2 className="font-semibold text-foreground">Прогресс по курсам</h2>
-              </div>
-              {selectedUser.courseProgress.length === 0 ? (
-                <p className="text-muted-foreground text-sm p-6">Студент не записан ни на один курс</p>
-              ) : selectedUser.courseProgress.map(cp => (
-                <div key={cp.course.id} className="border-b border-border last:border-0">
-                  <div className="px-6 py-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <span className="font-medium text-foreground text-sm">{cp.course.title}</span>
-                        <span className="ml-2 text-xs text-muted-foreground">{cp.course.level}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {cp.completed && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">✓ Завершён</span>}
-                        <span className="text-sm font-medium text-foreground">{cp.progress}%</span>
-                      </div>
-                    </div>
-                    <ProgressBar value={cp.progress} size="sm" />
-                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                      {cp.lessons.map(l => (
-                        <div key={l.id} className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-xs",
-                          l.isCompleted ? "bg-green-50 text-green-700" : "bg-muted/40 text-muted-foreground")}>
-                          <span>{TYPE_ICON[l.type]}</span>
-                          <span className="flex-1 truncate">{l.title}</span>
-                          {l.isCompleted ? <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0" /> : <Clock className="h-3 w-3 flex-shrink-0" />}
+              <div className="px-6 py-4 border-b border-border"><h2 className="font-semibold text-foreground">Прогресс по курсам</h2></div>
+              {selectedUser.courseProgress.length === 0 ? <p className="text-muted-foreground text-sm p-6">Студент не записан ни на один курс</p> :
+                selectedUser.courseProgress.map(cp => (
+                  <div key={cp.course.id} className="border-b border-border last:border-0">
+                    <div className="px-6 py-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div><span className="font-medium text-foreground text-sm">{cp.course.title}</span><span className="ml-2 text-xs text-muted-foreground">{cp.course.level}</span></div>
+                        <div className="flex items-center gap-2">
+                          {cp.completed && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">✓ Завершён</span>}
+                          <span className="text-sm font-medium text-foreground">{cp.progress}%</span>
                         </div>
-                      ))}
+                      </div>
+                      <ProgressBar value={cp.progress} size="sm" />
+                      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                        {cp.lessons.map(l => (
+                          <div key={l.id} className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-xs", l.isCompleted ? "bg-green-50 text-green-700" : "bg-muted/40 text-muted-foreground")}>
+                            <span>{TYPE_ICON[l.type]}</span><span className="flex-1 truncate">{l.title}</span>
+                            {l.isCompleted ? <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0" /> : <Clock className="h-3 w-3 flex-shrink-0" />}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
-
             {selectedUser.recentActivity.length > 0 && (
               <div className="bg-card border border-border rounded-xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-border">
-                  <h2 className="font-semibold text-foreground">Последняя активность</h2>
-                </div>
+                <div className="px-6 py-4 border-b border-border"><h2 className="font-semibold text-foreground">Последняя активность</h2></div>
                 <div className="divide-y divide-border">
                   {selectedUser.recentActivity.map((a, i) => (
                     <div key={i} className="px-6 py-3 flex items-center gap-3">
                       <span className="text-base">{TYPE_ICON[a.lessonType]}</span>
                       <span className="flex-1 text-sm text-foreground">{a.lessonTitle}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {a.completedAt ? new Date(a.completedAt).toLocaleDateString('ru-RU') : '—'}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{a.completedAt ? new Date(a.completedAt).toLocaleDateString('ru-RU') : '—'}</span>
                     </div>
                   ))}
                 </div>
@@ -354,40 +519,29 @@ export default function AdminPage() {
           </div>
         )}
       </main>
-      {confirmDelete && <ConfirmDialog message={`Удалить пользователя "${confirmDelete.name}"? Это действие нельзя отменить.`} onConfirm={handleDelete} onCancel={() => setConfirmDelete(null)} />}
+      {confirmDelete && <ConfirmDialog message={`Удалить пользователя "${confirmDelete.name}"?`} onConfirm={handleDelete} onCancel={() => setConfirmDelete(null)} />}
     </div>
   );
 
-  // ── Main admin view ────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Navbar />
+    <div className="min-h-screen flex flex-col bg-background"><Navbar />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
-
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Панель администратора</h1>
-            <p className="text-muted-foreground text-sm mt-1">AviationEnglish.kz</p>
-          </div>
-          <Button variant="outline" onClick={loadAll} className="gap-2">
-            <TrendingUp className="h-4 w-4" />Обновить
-          </Button>
+          <div><h1 className="text-2xl font-bold text-foreground">Панель администратора</h1><p className="text-muted-foreground text-sm mt-1">AviationEnglish.kz</p></div>
+          <Button variant="outline" onClick={loadAll} className="gap-2"><TrendingUp className="h-4 w-4" />Обновить</Button>
         </div>
 
-        {/* Stats */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { icon: Users,         label: 'Студентов',        value: stats.totalUsers,       sub: `+${stats.newUsersThisWeek} за неделю` },
-              { icon: BookOpen,      label: 'Курсов',           value: stats.totalCourses,     sub: `${stats.totalLessons} уроков` },
+              { icon: Users, label: 'Студентов', value: stats.totalUsers, sub: `+${stats.newUsersThisWeek} за неделю` },
+              { icon: BookOpen, label: 'Курсов', value: stats.totalCourses, sub: `${stats.totalLessons} уроков` },
               { icon: GraduationCap, label: 'Записей на курсы', value: stats.totalEnrollments, sub: 'всего' },
-              { icon: CheckCircle2,  label: 'Уроков пройдено',  value: stats.completedLessons, sub: `${stats.activeUsersThisWeek} активных` },
+              { icon: CheckCircle2, label: 'Уроков пройдено', value: stats.completedLessons, sub: `${stats.activeUsersThisWeek} активных` },
             ].map((s, i) => (
               <div key={i} className="bg-card border border-border rounded-xl p-5">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <s.icon className="h-4 w-4 text-primary" />
-                  </div>
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><s.icon className="h-4 w-4 text-primary" /></div>
                   <span className="text-xs text-muted-foreground">{s.label}</span>
                 </div>
                 <div className="text-2xl font-bold text-foreground">{s.value.toLocaleString()}</div>
@@ -397,7 +551,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Tabs */}
         <div className="flex gap-1 border-b border-border mb-6">
           {([
             { key: 'overview', label: 'Обзор' },
@@ -413,26 +566,20 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* ── Tab: Overview ── */}
         {tab === 'overview' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-card border border-border rounded-xl overflow-hidden">
-              <div className="px-5 py-4 border-b border-border font-semibold text-foreground text-sm">Топ студентов по прогрессу</div>
+              <div className="px-5 py-4 border-b border-border font-semibold text-foreground text-sm">Топ студентов</div>
               <div className="divide-y divide-border">
                 {[...users].sort((a,b) => b.lessonsCompleted - a.lessonsCompleted).slice(0,5).map((u,i) => (
                   <div key={u.id} className="px-5 py-3 flex items-center gap-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => openUser(u.id)}>
                     <span className="text-xs font-medium text-muted-foreground w-4">{i+1}</span>
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
-                      {u.firstName[0]}{u.lastName[0]}
-                    </div>
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">{u.firstName[0]}{u.lastName[0]}</div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-foreground truncate">{u.firstName} {u.lastName}</div>
                       <div className="text-xs text-muted-foreground">{u.lessonsCompleted} уроков</div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-foreground">{u.avgProgress}%</div>
-                      <div className="text-xs text-muted-foreground">avg</div>
-                    </div>
+                    <div className="text-right"><div className="text-sm font-medium text-foreground">{u.avgProgress}%</div><div className="text-xs text-muted-foreground">avg</div></div>
                   </div>
                 ))}
               </div>
@@ -457,7 +604,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── Tab: Users ── */}
         {tab === 'users' && (
           <div className="space-y-4">
             <div className="relative">
@@ -482,19 +628,12 @@ export default function AdminPage() {
                     <tr key={u.id} className="hover:bg-muted/20 transition-colors">
                       <td className="px-4 py-3 cursor-pointer" onClick={() => openUser(u.id)}>
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">
-                            {u.firstName[0]}{u.lastName[0]}
-                          </div>
-                          <div>
-                            <div className="font-medium text-foreground">{u.firstName} {u.lastName}</div>
-                            <div className="text-xs text-muted-foreground">{u.email}</div>
-                          </div>
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold flex-shrink-0">{u.firstName[0]}{u.lastName[0]}</div>
+                          <div><div className="font-medium text-foreground">{u.firstName} {u.lastName}</div><div className="text-xs text-muted-foreground">{u.email}</div></div>
                         </div>
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
-                        <span className={cn("text-xs px-2 py-0.5 rounded-full", u.role === 'ADMIN' ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground")}>
-                          {u.role}
-                        </span>
+                        <span className={cn("text-xs px-2 py-0.5 rounded-full", u.role === 'ADMIN' ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground")}>{u.role}</span>
                         {u.blocked && <span className="ml-1 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Заблокирован</span>}
                       </td>
                       <td className="px-4 py-3 text-center"><span className="text-foreground font-medium">{u.coursesEnrolled}</span></td>
@@ -507,18 +646,13 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1 justify-end">
-                          <button onClick={() => changeRole(u.id, u.role === 'ADMIN' ? 'USER' : 'ADMIN')}
-                            className="p-1.5 rounded hover:bg-muted transition-colors" title={u.role === 'ADMIN' ? 'Снять ADMIN' : 'Дать ADMIN'}>
+                          <button onClick={() => changeRole(u.id, u.role === 'ADMIN' ? 'USER' : 'ADMIN')} className="p-1.5 rounded hover:bg-muted transition-colors" title={u.role === 'ADMIN' ? 'Снять ADMIN' : 'Дать ADMIN'}>
                             {u.role === 'ADMIN' ? <ShieldOff className="h-3.5 w-3.5 text-amber-600" /> : <Shield className="h-3.5 w-3.5 text-muted-foreground" />}
                           </button>
-                          <button onClick={() => toggleBlock(u.id, !u.blocked)}
-                            className="p-1.5 rounded hover:bg-muted transition-colors" title={u.blocked ? 'Разблокировать' : 'Заблокировать'}>
-                            {u.blocked
-                              ? <span className="text-xs text-green-600 font-medium">▶</span>
-                              : <span className="text-xs text-red-500 font-medium">⊘</span>}
+                          <button onClick={() => toggleBlock(u.id, !u.blocked)} className="p-1.5 rounded hover:bg-muted transition-colors" title={u.blocked ? 'Разблокировать' : 'Заблокировать'}>
+                            {u.blocked ? <span className="text-xs text-green-600 font-medium">▶</span> : <span className="text-xs text-red-500 font-medium">⊘</span>}
                           </button>
-                          <button onClick={() => setConfirmDelete({ type:'user', id: u.id, name: `${u.firstName} ${u.lastName}` })}
-                            className="p-1.5 rounded hover:bg-red-50 transition-colors">
+                          <button onClick={() => setConfirmDelete({ type:'user', id: u.id, name: `${u.firstName} ${u.lastName}` })} className="p-1.5 rounded hover:bg-red-50 transition-colors">
                             <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
                           </button>
                           <ChevronRight className="h-4 w-4 text-muted-foreground cursor-pointer" onClick={() => openUser(u.id)} />
@@ -533,13 +667,10 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── Tab: Courses ── */}
         {tab === 'courses' && (
           <div className="space-y-4">
             <div className="flex justify-end">
-              <Button onClick={openCreateCourse} className="gap-2">
-                <Plus className="h-4 w-4" /> Новый курс
-              </Button>
+              <Button onClick={openCreateCourse} className="gap-2"><Plus className="h-4 w-4" /> Новый курс</Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {courses.map(c => (
@@ -553,21 +684,12 @@ export default function AdminPage() {
                       <span className={cn("text-xs px-2 py-0.5 rounded-full", c.price === 0 ? "bg-green-100 text-green-700" : "bg-primary/10 text-primary")}>
                         {c.price === 0 ? 'Бесплатно' : `${c.price.toLocaleString()} ₸`}
                       </span>
-                      <button onClick={() => openEditCourse(c)} className="p-1.5 rounded hover:bg-muted transition-colors ml-1">
-                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                      </button>
-                      <button onClick={() => setConfirmDelete({ type:'course', id: c.id, name: c.title })}
-                        className="p-1.5 rounded hover:bg-red-50 transition-colors">
-                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
-                      </button>
+                      <button onClick={() => openEditCourse(c)} className="p-1.5 rounded hover:bg-muted transition-colors ml-1"><Pencil className="h-3.5 w-3.5 text-muted-foreground" /></button>
+                      <button onClick={() => setConfirmDelete({ type:'course', id: c.id, name: c.title })} className="p-1.5 rounded hover:bg-red-50 transition-colors"><Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" /></button>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3 mb-4">
-                    {[
-                      { label: 'Студентов', value: c.studentsCount },
-                      { label: 'Уроков',    value: c.lessonsCount },
-                      { label: 'Завершили', value: c.completedCount },
-                    ].map(s => (
+                    {[{ label: 'Студентов', value: c.studentsCount }, { label: 'Уроков', value: c.lessonsCount }, { label: 'Завершили', value: c.completedCount }].map(s => (
                       <div key={s.label} className="bg-muted/40 rounded-lg p-2.5 text-center">
                         <div className="text-lg font-bold text-foreground">{s.value}</div>
                         <div className="text-xs text-muted-foreground">{s.label}</div>
@@ -575,10 +697,7 @@ export default function AdminPage() {
                     ))}
                   </div>
                   <div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
-                      <span>Средний прогресс</span>
-                      <span className="font-medium text-foreground">{c.avgProgress}%</span>
-                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5"><span>Средний прогресс</span><span className="font-medium text-foreground">{c.avgProgress}%</span></div>
                     <ProgressBar value={c.avgProgress} size="sm" />
                   </div>
                 </div>
@@ -587,13 +706,10 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── Tab: Lessons ── */}
         {tab === 'lessons' && (
           <div className="space-y-4">
             <div className="flex justify-end">
-              <Button onClick={openCreateLesson} className="gap-2">
-                <Plus className="h-4 w-4" /> Новый урок
-              </Button>
+              <Button onClick={openCreateLesson} className="gap-2"><Plus className="h-4 w-4" /> Новый урок</Button>
             </div>
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <table className="w-full text-sm">
@@ -619,20 +735,21 @@ export default function AdminPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground hidden md:table-cell text-xs">{l.course.title}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">{l.type}</span>
-                      </td>
+                      <td className="px-4 py-3 text-center"><span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">{l.type}</span></td>
                       <td className="px-4 py-3 text-center">
                         <span className="text-foreground font-medium">{l.completions}</span>
                         <span className="text-muted-foreground text-xs ml-1">({l.completionRate}%)</span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1 justify-end">
-                          <button onClick={() => openEditLesson(l)} className="p-1.5 rounded hover:bg-muted transition-colors">
+                          <button onClick={() => setContentModal({ id: l.id, type: l.type, title: l.title })}
+                            className="p-1.5 rounded hover:bg-primary/10 transition-colors" title="Редактировать содержимое">
+                            <FileText className="h-3.5 w-3.5 text-primary" />
+                          </button>
+                          <button onClick={() => openEditLesson(l)} className="p-1.5 rounded hover:bg-muted transition-colors" title="Редактировать настройки">
                             <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                           </button>
-                          <button onClick={() => setConfirmDelete({ type:'lesson', id: l.id, name: l.title })}
-                            className="p-1.5 rounded hover:bg-red-50 transition-colors">
+                          <button onClick={() => setConfirmDelete({ type:'lesson', id: l.id, name: l.title })} className="p-1.5 rounded hover:bg-red-50 transition-colors">
                             <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
                           </button>
                         </div>
@@ -647,111 +764,81 @@ export default function AdminPage() {
         )}
       </main>
 
-      {/* ── Course Modal ── */}
       {courseModal && (
         <Modal title={courseModal.mode === 'create' ? 'Создать курс' : 'Редактировать курс'} onClose={() => setCourseModal(null)}>
           <div className="space-y-4">
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">Название *</label>
+            <div><label className="text-xs text-muted-foreground block mb-1">Название *</label>
               <input value={courseForm.title} onChange={e => setCourseForm(p => ({...p, title: e.target.value}))}
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">Описание</label>
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" /></div>
+            <div><label className="text-xs text-muted-foreground block mb-1">Описание</label>
               <textarea value={courseForm.description} onChange={e => setCourseForm(p => ({...p, description: e.target.value}))} rows={3}
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary resize-none" />
-            </div>
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary resize-none" /></div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Уровень</label>
+              <div><label className="text-xs text-muted-foreground block mb-1">Уровень</label>
                 <select value={courseForm.level} onChange={e => setCourseForm(p => ({...p, level: e.target.value}))}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary">
-                  {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Цена (₸)</label>
+                  {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}</select></div>
+              <div><label className="text-xs text-muted-foreground block mb-1">Цена (₸)</label>
                 <input type="number" value={courseForm.price} onChange={e => setCourseForm(p => ({...p, price: +e.target.value}))}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" />
-              </div>
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" /></div>
             </div>
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">URL изображения</label>
-              <input value={courseForm.thumbnailUrl} onChange={e => setCourseForm(p => ({...p, thumbnailUrl: e.target.value}))}
-                placeholder="/images/course-1.jpg"
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" />
-            </div>
+            <div><label className="text-xs text-muted-foreground block mb-1">URL изображения</label>
+              <input value={courseForm.thumbnailUrl} onChange={e => setCourseForm(p => ({...p, thumbnailUrl: e.target.value}))} placeholder="/images/course-1.jpg"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" /></div>
             <div className="flex gap-3 justify-end pt-2">
               <Button variant="outline" onClick={() => setCourseModal(null)}>Отмена</Button>
               <Button onClick={saveCourse} disabled={saving || !courseForm.title} className="gap-2">
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                Сохранить
-              </Button>
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}Сохранить</Button>
             </div>
           </div>
         </Modal>
       )}
 
-      {/* ── Lesson Modal ── */}
       {lessonModal && (
         <Modal title={lessonModal.mode === 'create' ? 'Создать урок' : 'Редактировать урок'} onClose={() => setLessonModal(null)}>
           <div className="space-y-4">
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">Название *</label>
+            <div><label className="text-xs text-muted-foreground block mb-1">Название *</label>
               <input value={lessonForm.title} onChange={e => setLessonForm(p => ({...p, title: e.target.value}))}
-                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground block mb-1">Курс *</label>
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" /></div>
+            <div><label className="text-xs text-muted-foreground block mb-1">Курс *</label>
               <select value={lessonForm.courseId} onChange={e => setLessonForm(p => ({...p, courseId: e.target.value}))}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary">
-                {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-              </select>
-            </div>
+                {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Тип</label>
+              <div><label className="text-xs text-muted-foreground block mb-1">Тип</label>
                 <select value={lessonForm.type} onChange={e => setLessonForm(p => ({...p, type: e.target.value}))}
                   className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary">
-                  {LESSON_TYPES.map(t => <option key={t} value={t}>{TYPE_ICON[t]} {t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Длительность (мин)</label>
+                  {LESSON_TYPES.map(t => <option key={t} value={t}>{TYPE_ICON[t]} {t}</option>)}</select></div>
+              <div><label className="text-xs text-muted-foreground block mb-1">Длительность (мин)</label>
                 <input type="number" value={lessonForm.duration} onChange={e => setLessonForm(p => ({...p, duration: +e.target.value}))}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" />
-              </div>
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Порядок</label>
+              <div><label className="text-xs text-muted-foreground block mb-1">Порядок</label>
                 <input type="number" value={lessonForm.order} onChange={e => setLessonForm(p => ({...p, order: +e.target.value}))}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" />
-              </div>
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:border-primary" /></div>
               <div className="flex items-center gap-2 pt-5">
-                <input type="checkbox" id="isFree" checked={lessonForm.isFree} onChange={e => setLessonForm(p => ({...p, isFree: e.target.checked}))}
-                  className="w-4 h-4 accent-primary" />
+                <input type="checkbox" id="isFree" checked={lessonForm.isFree} onChange={e => setLessonForm(p => ({...p, isFree: e.target.checked}))} className="w-4 h-4 accent-primary" />
                 <label htmlFor="isFree" className="text-sm text-foreground">Бесплатный урок</label>
               </div>
             </div>
             <div className="flex gap-3 justify-end pt-2">
               <Button variant="outline" onClick={() => setLessonModal(null)}>Отмена</Button>
               <Button onClick={saveLesson} disabled={saving || !lessonForm.title} className="gap-2">
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                Сохранить
-              </Button>
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}Сохранить</Button>
             </div>
           </div>
         </Modal>
       )}
 
-      {/* ── Confirm Delete ── */}
+      {contentModal && (
+        <Modal title={`Содержимое: ${contentModal.title}`} onClose={() => setContentModal(null)} wide>
+          <ContentEditor lessonId={contentModal.id} lessonType={contentModal.type} onClose={() => setContentModal(null)} />
+        </Modal>
+      )}
+
       {confirmDelete && (
-        <ConfirmDialog
-          message={`Удалить "${confirmDelete.name}"? Это действие нельзя отменить.`}
-          onConfirm={handleDelete}
-          onCancel={() => setConfirmDelete(null)}
-        />
+        <ConfirmDialog message={`Удалить "${confirmDelete.name}"? Это действие нельзя отменить.`} onConfirm={handleDelete} onCancel={() => setConfirmDelete(null)} />
       )}
     </div>
   );
