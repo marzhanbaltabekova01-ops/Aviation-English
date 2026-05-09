@@ -36,7 +36,7 @@ async function main() {
   ];
 
   for (const c of courses) {
-    await prisma.course.upsert({ where: { id: c.id }, update: {}, create: c });
+    await prisma.course.upsert({ where: { id: c.id }, update: { thumbnailUrl: c.thumbnailUrl }, create: c });
   }
   console.log('✅ Courses');
 
